@@ -1,4 +1,4 @@
-import uuid
+import ulid
 
 from django.db import models
 
@@ -7,13 +7,14 @@ from django.db import models
 
 
 class Transaction(models.Model):
+    ulid = models.UUIDField(default=ulid.ulid, primary_key=True)
     amount = models.BigIntegerField()
     # todo: add fields if necessary
     pass
 
 
 class Wallet(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    ulid = models.UUIDField(default=ulid.ulid, primary_key=True)
     balance = models.BigIntegerField(default=0)
 
     def deposit(self, amount: int):

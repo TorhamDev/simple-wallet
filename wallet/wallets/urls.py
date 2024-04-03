@@ -4,7 +4,7 @@ from wallets.views import CreateDepositView, ScheduleWithdrawView, CreateWalletV
 
 urlpatterns = [
     path("", CreateWalletView.as_view()),
-    path("<uuid>/", RetrieveWalletView.as_view()),
-    path("<uuid>/deposit", CreateDepositView.as_view()),
-    path("<uuid>/withdraw", ScheduleWithdrawView.as_view()),
+    path("<ulid>/", RetrieveWalletView.as_view()),
+    path("<ulid>/deposit", CreateDepositView.as_view()),
+    path("<ulid>/withdraw", ScheduleWithdrawView.as_view()),
 ]

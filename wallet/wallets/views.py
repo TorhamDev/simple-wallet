@@ -13,7 +13,7 @@ class CreateWalletView(CreateAPIView):
 class RetrieveWalletView(RetrieveAPIView):
     serializer_class = WalletSerializer
     queryset = Wallet.objects.all()
-    lookup_field = "uuid"
+    lookup_field = "ulid"
 
 
 class CreateDepositView(APIView):
