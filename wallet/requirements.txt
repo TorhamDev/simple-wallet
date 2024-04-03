@@ -2,4 +2,3 @@ Django==3.2
 djangorestframework==3.14.0
 requests==2.28.1
 mysqlclient==2.2.4
-ulid==1.1

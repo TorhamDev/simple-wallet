@@ -6,5 +6,5 @@ from wallets.models import Wallet
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
-        fields = ("ulid", "balance")
-        read_only_fields = ("ulid", "balance")
+        fields = ("uuid", "balance")
+        read_only_fields = ("uuid", "balance")
