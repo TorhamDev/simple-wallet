@@ -3,15 +3,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from wallets.models import Wallet
-from wallets.serializers import WalletSerializer
+from wallets.serializers import CreateWalletInputSerializer
 
 
 class CreateWalletView(CreateAPIView):
-    serializer_class = WalletSerializer
+    serializer_class = CreateWalletInputSerializer
 
 
 class RetrieveWalletView(RetrieveAPIView):
-    serializer_class = WalletSerializer
+    serializer_class = CreateWalletInputSerializer
     queryset = Wallet.objects.all()
     lookup_field = "uuid"
 
