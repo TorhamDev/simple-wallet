@@ -1,1 +1,3 @@
-from ._input import CreateWalletInputSerializer  # noqa
+from ._input import DepositWalletInputSerializer  # noqa
+from ._input import WalletInputSerializer  # noqa
+from .output import WalletOutputSerializer  # noqa
