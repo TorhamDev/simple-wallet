@@ -20,7 +20,7 @@ class DepositWalletInputSerializer(serializers.ModelSerializer):
 
 
 class WithdrawWalletInputSerializer(serializers.Serializer):
-    date = serializers.DateTimeField()
+    datetime = serializers.DateTimeField()
     amount = serializers.DecimalField(
         max_digits=10,
         decimal_places=2,

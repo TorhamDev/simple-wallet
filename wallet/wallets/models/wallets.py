@@ -12,6 +12,7 @@ class Wallet(BaseModel):
         max_digits=10,
         decimal_places=2,
         validators=[MinValueValidator(Decimal("0.00"))],
+        default=Decimal("0.00"),
     )
 
     def deposit(self, amount: Decimal) -> "Wallet":
