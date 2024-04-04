@@ -17,6 +17,7 @@ class DepositWalletInputSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
         fields = ("balance",)
+        extra_kwargs = {"balance": {"required": True}}
 
 
 class WithdrawWalletInputSerializer(serializers.Serializer):

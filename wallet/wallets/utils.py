@@ -1,4 +1,7 @@
+from functools import lru_cache
+
 import requests
+from redis import Redis
 
 
 def request_third_party_deposit():
@@ -8,3 +11,9 @@ def request_third_party_deposit():
     if result == "success":
         return True
     return False
+
+
+@lru_cache
+def get_redis() -> Redis:
+    redis = Redis()
+    return redis

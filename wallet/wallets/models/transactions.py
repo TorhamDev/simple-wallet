@@ -23,6 +23,9 @@ class Transaction(BaseModel):
         null=True,
     )
 
+    def __str__(self) -> str:
+        return f"{self.uuid} - {self.amount} - {self.draw_time} - {self.status}"
+
     @staticmethod
     def create_transaction(
         wallet: Wallet, amount: Decimal, draw_time: datetime

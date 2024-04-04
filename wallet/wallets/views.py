@@ -31,6 +31,7 @@ class CreateDepositView(APIView):
     def post(self, request: Request, uuid, *args, **kwargs):
         data = DepositWalletInputSerializer(data=request.data)
         data.is_valid(raise_exception=True)
+        print(data.validated_data, data.is_valid(raise_exception=True))
         wallet = get_object_or_404(Wallet, uuid=uuid)
         wallet = wallet.deposit(data.validated_data["balance"])
         return Response(WalletOutputSerializer(instance=wallet).data)
@@ -49,4 +50,4 @@ class ScheduleWithdrawView(APIView):
             amount=data.validated_data["amount"],
             draw_time=data.validated_data["datetime"],
         )
-        return Response(TransactionOutputSerializer(instance=transaction))
+        return Response(TransactionOutputSerializer(instance=transaction).data)
