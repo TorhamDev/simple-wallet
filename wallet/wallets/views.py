@@ -8,6 +8,7 @@ from wallets.models import Wallet
 from wallets.models.transactions import Transaction
 from wallets.serializers import (
     DepositWalletInputSerializer,
+    TransactionOutputSerializer,
     WalletInputSerializer,
     WalletOutputSerializer,
     WithdrawWalletInputSerializer,
@@ -42,9 +43,10 @@ class ScheduleWithdrawView(APIView):
         data = WithdrawWalletInputSerializer(data=request.data)
         data.is_valid(raise_exception=True)
 
+        # create the transaction
         transaction = Transaction.create_transaction(
             wallet=wallet,
             amount=data.validated_data["amount"],
             draw_time=data.validated_data["datetime"],
         )
-        return Response({"status": "OK"})
+        return Response(TransactionOutputSerializer(instance=transaction))

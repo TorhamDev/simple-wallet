@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import requests
 
 
@@ -10,6 +8,3 @@ def request_third_party_deposit():
     if result == "success":
         return True
     return False
-
-
-def add_task_to_redis(trasnaction_id: str, draw_time: datetime): ...
