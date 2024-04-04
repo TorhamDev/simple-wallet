@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2024-04-04T08:06:59.360Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.8 Chrome/114.0.5735.289 Electron/25.5.0 Safari/537.36" etag="7cD5Ii9bcdUbQheNDz4A" version="21.6.8" type="device">
+<mxfile host="Electron" modified="2024-04-04T08:08:10.266Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.6.8 Chrome/114.0.5735.289 Electron/25.5.0 Safari/537.36" etag="IUdw0NsmTKs0sxnV2XlY" version="21.6.8" type="device">
   <diagram name="Page-1" id="YDKox7PvVpLnMzjBg_q2">
-    <mxGraphModel dx="1434" dy="829" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
+    <mxGraphModel dx="1195" dy="691" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" background="none" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -94,8 +94,8 @@
         <mxCell id="tfVhezPmAWc7iIOuUQNJ-6" value="withdraw API" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
           <mxGeometry x="1345" y="975" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="tfVhezPmAWc7iIOuUQNJ-8" value="Set&amp;nbsp;Scheduled withdraw" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="1070" y="985" width="150" height="30" as="geometry" />
+        <mxCell id="tfVhezPmAWc7iIOuUQNJ-8" value="2. Set&amp;nbsp;Scheduled withdraw" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="985" width="170" height="30" as="geometry" />
         </mxCell>
         <mxCell id="tfVhezPmAWc7iIOuUQNJ-9" value="&lt;div&gt;Notes:&lt;/div&gt;&lt;div&gt;1. Lock row with exclusive lock&lt;/div&gt;&lt;div&gt;2. check the wallet balance&lt;/div&gt;&lt;div&gt;3. if wallet balance is low -&amp;gt; raise error&lt;/div&gt;&lt;div&gt;4. if walet balance is ok -&amp;gt; send req to 3trd party&lt;/div&gt;&lt;div&gt;5. decrease balance of the wallet&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
           <mxGeometry x="1140" y="530" width="280" height="100" as="geometry" />
@@ -115,14 +115,17 @@
         <mxCell id="tfVhezPmAWc7iIOuUQNJ-14" value="Third-party" style="whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
           <mxGeometry x="890" y="680" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="tfVhezPmAWc7iIOuUQNJ-16" value="send check to 3rd party" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;rotation=90;" vertex="1" parent="1">
-          <mxGeometry x="880" y="850" width="150" height="30" as="geometry" />
+        <mxCell id="tfVhezPmAWc7iIOuUQNJ-16" value="3. send check to 3rd party" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;rotation=90;" vertex="1" parent="1">
+          <mxGeometry x="875" y="850" width="160" height="30" as="geometry" />
         </mxCell>
         <mxCell id="tfVhezPmAWc7iIOuUQNJ-18" value="SQL DB" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
           <mxGeometry x="1160" y="680" width="60" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="tfVhezPmAWc7iIOuUQNJ-20" value="update wallet and&lt;br&gt;create transaction" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
-          <mxGeometry x="1040" y="700" width="120" height="40" as="geometry" />
+        <mxCell id="tfVhezPmAWc7iIOuUQNJ-20" value="4. update wallet and&lt;br&gt;create transaction" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1035" y="700" width="130" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="tfVhezPmAWc7iIOuUQNJ-21" value="1. user request" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="1475" y="985" width="100" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
