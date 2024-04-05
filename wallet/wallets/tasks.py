@@ -7,9 +7,6 @@ import pydantic
 from celery.utils.log import get_task_logger
 from django.db import transaction
 
-# better to use `import exceptions` if there is more than one thing to import
-from exceptions import ThirdPartyError
-
 from wallet.celery import app
 from wallets.constants import (
     TRANSACTION_STATUS_FAILED,
@@ -17,6 +14,9 @@ from wallets.constants import (
     TRANSACTION_STATUS_PENDING,
     TRANSACTION_STATUS_SUCCESSFUL,
 )
+
+# better to use `import exceptions` if there is more than one thing to import
+from wallets.exceptions import ThirdPartyError
 from wallets.models.transactions import Transaction
 from wallets.utils import WithdrawFlowManager, get_redis, request_third_party_deposit
 
