@@ -37,6 +37,7 @@ def get_transactions_to_withdraw() -> None:
         )
 
         if transactions:
+            logger.debug(f"get_transactions_to_withdraw: {transactions=}")
             tr_to_redis = []
             for tr in transactions.values("uuid", "amount"):
                 tr["uuid"] = str(tr["uuid"])
@@ -47,6 +48,9 @@ def get_transactions_to_withdraw() -> None:
 
             for tr in transactions:
                 tr.status = TRANSACTION_STATUS_INPROGRESS
+            logger.debug(
+                f"updating transactions status to {TRANSACTION_STATUS_INPROGRESS} for {tr_to_redis}"
+            )
 
             Transaction.objects.bulk_update(transactions, ["status"])
 
@@ -57,11 +61,10 @@ def do_withdraw() -> None:
     tr_to_withdraw = r.lpop("transactions", 10)
 
     if not tr_to_withdraw:
-        logger.warning("Nothing to do!")
+        logger.debug("Nothing to do!")
         return
 
-    logger.warning(f"{tr_to_withdraw=}")
-    logger.warning(f"{type(tr_to_withdraw)=}")
+    logger.debug(f"Start do_wthidraw with: {tr_to_withdraw=}")
 
     with WithdrawFlowManager(tr_to_withdraw):
         if tr_to_withdraw:
@@ -69,9 +72,9 @@ def do_withdraw() -> None:
             for _ in range(to_iter):
                 pure_tr = tr_to_withdraw.pop()
                 tr = pure_tr.decode().replace("'", '"')
-                logger.warning(f"TR TO JSON: {tr=}, {type(tr)=}")
                 tr = TransactionData.model_validate(json.loads(str(tr)))
                 with transaction.atomic():
+                    logger.debug(f"Start SQL transaction for : {pure_tr=}")
                     tr = (
                         Transaction.objects.select_related("wallet")
                         .select_for_update()
@@ -80,12 +83,19 @@ def do_withdraw() -> None:
                     if (tr.wallet.balance - tr.amount) < 0:
                         tr.status = TRANSACTION_STATUS_FAILED
                         tr.save()
+                        logger.debug(
+                            f"withdraw fail bc of low balance for : {pure_tr=}"
+                        )
                     else:
+                        logger.debug(f"ourside withdraw successed for : {pure_tr=}")
                         tr.wallet.decrease_balance(tr.amount)
                         tr.status = TRANSACTION_STATUS_SUCCESSFUL
                         tr.save()
 
+                    logger.debug(f"Requesting 3rd party for : {pure_tr=}")
                     third_party_result = request_third_party_deposit()
                     if not third_party_result:
+                        logger.error(f"Requesting 3rd party fail for : {pure_tr=}")
+                        logger.debug(f"Rollback bc 3rd party fail for : {pure_tr=}")
                         tr_to_withdraw.append(pure_tr)
                         raise ThirdPartyError
