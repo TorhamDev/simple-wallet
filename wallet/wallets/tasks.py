@@ -6,7 +6,6 @@ from uuid import UUID
 import pydantic
 from celery.utils.log import get_task_logger
 from django.db import transaction
-from redis.exceptions import ConnectionError, RedisError
 
 from wallet.celery import app
 from wallets.constants import (
@@ -16,7 +15,7 @@ from wallets.constants import (
     TRANSACTION_STATUS_SUCCESSFUL,
 )
 from wallets.models.transactions import Transaction
-from wallets.utils import get_redis, request_third_party_deposit
+from wallets.utils import WithdrawFlowManager, get_redis
 
 logger = get_task_logger(__name__)
 
@@ -53,41 +52,31 @@ def get_transactions_to_withdraw() -> None:
 def do_withdraw() -> None:
     r = get_redis()
     tr_to_withdraw = r.lpop("transactions", 10)
+
+    if not tr_to_withdraw:
+        logger.warning("Nothing to do!")
+        return
+
     logger.warning(f"{tr_to_withdraw=}")
+    logger.warning(f"{type(tr_to_withdraw)=}")
 
-    if tr_to_withdraw:
-        logger.warning("TRDY")
-        for tr in tr_to_withdraw:
-            try:
-                logger.warning(f"{tr=}")
-                tr = TransactionData(**json.load(tr))
-
-                # request to 3rd party
-                result_3rd = request_third_party_deposit()
-                logger.warning(f"3RD RESULT: {result_3rd}")
-                if result_3rd:
-                    with transaction.atomic():
-                        tr = (
-                            Transaction.objects.select_related("wallet")
-                            .select_for_update()
-                            .get(uuid=tr.uuid)
-                        )
-                        if (tr.wallet.balance - tr.amount) < 0:
-                            tr.status = TRANSACTION_STATUS_FAILED
-                            tr.save()
-                        else:
-                            tr.wallet.decrease_balance(tr.amount)
-                            tr.status = TRANSACTION_STATUS_SUCCESSFUL
-                            tr.save()
-
-            except json.decoder.JSONDecodeError as e:
-                # do log
-                logger.warning(f"JSON ERROR: {e}")
-                ...
-            except pydantic.ValidationError:
-                # do log
-                print("PY ERROR")
-                ...
-            except (RedisError, ConnectionError):
-                # push back to the redis
-                ...
+    with WithdrawFlowManager(tr_to_withdraw):
+        with transaction.atomic():
+            if tr_to_withdraw:
+                to_iter = len(tr_to_withdraw)
+                for _ in range(to_iter):
+                    tr = tr_to_withdraw.pop().decode().replace("'", '"')
+                    logger.warning(f"TR TO JSON: {tr=}, {type(tr)=}")
+                    tr = TransactionData.model_validate(json.loads(str(tr)))
+                    tr = (
+                        Transaction.objects.select_related("wallet")
+                        .select_for_update()
+                        .get(uuid=tr.uuid)
+                    )
+                    if (tr.wallet.balance - tr.amount) < 0:
+                        tr.status = TRANSACTION_STATUS_FAILED
+                        tr.save()
+                    else:
+                        tr.wallet.decrease_balance(tr.amount)
+                        tr.status = TRANSACTION_STATUS_SUCCESSFUL
+                        tr.save()
