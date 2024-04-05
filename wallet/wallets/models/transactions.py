@@ -1,10 +1,11 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from django.core.validators import MinValueValidator
 from django.db import models
 
 from wallets.constants import TRANSACTION_STATUS, TRANSACTION_STATUS_PENDING
+from wallets.exceptions import DateIsNotInThefuture
 from wallets.models import BaseModel
 from wallets.models.wallets import Wallet
 
@@ -35,6 +36,9 @@ class Transaction(BaseModel):
     def create_transaction(
         wallet: Wallet, amount: Decimal, draw_time: datetime
     ) -> "Transaction":
+        if draw_time <= datetime.now(UTC):
+            raise DateIsNotInThefuture()
+
         transaction = Transaction(
             wallet=wallet,
             amount=amount,
