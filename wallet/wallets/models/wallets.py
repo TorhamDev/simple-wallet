@@ -17,7 +17,7 @@ class Wallet(BaseModel):
 
     def deposit(self, amount: Decimal) -> "Wallet":
         # NOTE: we are doing incremental update instead of row lock update
-        # why? cos is better for this type of updates
+        # why? bc is better for this type of updates
         wallet = Wallet.objects.get(pk=self.pk)
         wallet.balance = F("balance") + amount
         wallet.save()
@@ -26,7 +26,7 @@ class Wallet(BaseModel):
 
     def decrease_balance(self, amount: Decimal) -> "Wallet":
         # NOTE: we are doing incremental update instead of row lock update
-        # why? cos is better for this type of updates
+        # why? bc is better for this type of updates
         wallet = Wallet.objects.get(pk=self.pk)
         wallet.balance = F("balance") - amount
         wallet.save()

@@ -7,6 +7,9 @@ import pydantic
 from celery.utils.log import get_task_logger
 from django.db import transaction
 
+# better to use `import exceptions` if there is more than one thing to import
+from exceptions import ThirdPartyError
+
 from wallet.celery import app
 from wallets.constants import (
     TRANSACTION_STATUS_FAILED,
@@ -15,7 +18,7 @@ from wallets.constants import (
     TRANSACTION_STATUS_SUCCESSFUL,
 )
 from wallets.models.transactions import Transaction
-from wallets.utils import WithdrawFlowManager, get_redis
+from wallets.utils import WithdrawFlowManager, get_redis, request_third_party_deposit
 
 logger = get_task_logger(__name__)
 
@@ -61,13 +64,14 @@ def do_withdraw() -> None:
     logger.warning(f"{type(tr_to_withdraw)=}")
 
     with WithdrawFlowManager(tr_to_withdraw):
-        with transaction.atomic():
-            if tr_to_withdraw:
-                to_iter = len(tr_to_withdraw)
-                for _ in range(to_iter):
-                    tr = tr_to_withdraw.pop().decode().replace("'", '"')
-                    logger.warning(f"TR TO JSON: {tr=}, {type(tr)=}")
-                    tr = TransactionData.model_validate(json.loads(str(tr)))
+        if tr_to_withdraw:
+            to_iter = len(tr_to_withdraw)
+            for _ in range(to_iter):
+                pure_tr = tr_to_withdraw.pop()
+                tr = pure_tr.decode().replace("'", '"')
+                logger.warning(f"TR TO JSON: {tr=}, {type(tr)=}")
+                tr = TransactionData.model_validate(json.loads(str(tr)))
+                with transaction.atomic():
                     tr = (
                         Transaction.objects.select_related("wallet")
                         .select_for_update()
@@ -80,3 +84,8 @@ def do_withdraw() -> None:
                         tr.wallet.decrease_balance(tr.amount)
                         tr.status = TRANSACTION_STATUS_SUCCESSFUL
                         tr.save()
+
+                    third_party_result = request_third_party_deposit()
+                    if not third_party_result:
+                        tr_to_withdraw.append(pure_tr)
+                        raise ThirdPartyError
