@@ -148,4 +148,8 @@ CELERY_BEAT_SCHEDULE = {
         "task": "wallets.tasks.get_transactions_to_withdraw",
         "schedule": 30,
     },
+    "do_withdraw": {
+        "task": "wallets.tasks.do_withdraw",
+        "schedule": 62,
+    },
 }

@@ -23,3 +23,12 @@ class Wallet(BaseModel):
         wallet.save()
         wallet.refresh_from_db()
         return wallet
+
+    def decrease_balance(self, amount: Decimal) -> "Wallet":
+        # NOTE: we are doing incremental update instead of row lock update
+        # why? cos is better for this type of updates
+        wallet = Wallet.objects.get(pk=self.pk)
+        wallet.balance = F("balance") - amount
+        wallet.save()
+        wallet.refresh_from_db()
+        return wallet

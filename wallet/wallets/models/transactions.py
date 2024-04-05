@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 
+from django.core.validators import MinValueValidator
 from django.db import models
 
 from wallets.constants import TRANSACTION_STATUS, TRANSACTION_STATUS_PENDING
@@ -14,7 +15,11 @@ class Transaction(BaseModel):
         on_delete=models.SET_NULL,
         null=True,
     )
-    amount = models.BigIntegerField()
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
     draw_time = models.DateTimeField()
     status = models.CharField(
         max_length=20,
