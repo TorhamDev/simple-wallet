@@ -8,6 +8,7 @@ I know that Redis is not a good option for this project! probably RabbitMQ is a 
 
 ### things I want to do but I don't have time for it:
 
+- [ ] Dockerizing the project
 - [ ] Setup logger
 - [ ] Swagger doc
 - [ ] Complite testing
@@ -19,3 +20,9 @@ this project has a main problem and it starts with 3rd party service, we have to
 so if 3rd party has a problem with the deposit we have to roll back all of our work and what if 3rd party doesn't have any problem but we land a problem? this is not reminding you of something? yes, [Two Generals' Problem](https://www.designgurus.io/answers/detail/what-is-the-two-generals-problem)
 
 so we know there is no real answer to this problem, there is always something wrong with this situation and I guess dealing with this problem was the main target of the project.
+
+![image](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue)
+![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white)
+![DjangoREST](https://img.shields.io/badge/DJANGO-REST-ff1709?style=for-the-badge&logo=django&logoColor=white&color=ff1709&labelColor=gray)
+![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
