@@ -38,8 +38,9 @@ class WithdrawFlowManager:
     def __exit__(self, exc_type, exc_val, traceback):
         if exc_type:
             print(f"Restore again to redis bc of: {exc_type.__name__} - {str(exc_val)}")
-            r = get_redis()
-            r.lpush("transactions", *self.tr_to_withdraw)
+            if self.tr_to_withdraw:
+                r = get_redis()
+                r.lpush("transactions", *self.tr_to_withdraw)
 
         if exc_type is json.decoder.JSONDecodeError:
             print(f"An JSON error occurred: {exc_type.__name__} - {str(exc_val)}")
