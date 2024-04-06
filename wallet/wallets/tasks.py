@@ -8,12 +8,11 @@ from celery.utils.log import get_task_logger
 from django.db import transaction
 
 from wallet.celery import app
-from wallets.constants import TransactionStatus
+from wallets.constants import TRANSACTIONS_REDIS_KEY, TransactionStatus
 
 # better to use `import exceptions` if there is more than one thing to import
-from wallets.exceptions import ThirdPartyError
 from wallets.models.transactions import Transaction
-from wallets.utils import WithdrawFlowManager, get_redis, request_third_party_deposit
+from wallets.utils import WithdrawFlowManager, get_redis, handle_third_party
 
 logger = get_task_logger(__name__)
 
@@ -39,7 +38,7 @@ def get_transactions_to_withdraw() -> None:
                 tr_to_redis.append(str(tr))
             r = get_redis()
 
-            r.lpush("transactions", *tr_to_redis)
+            r.lpush(TRANSACTIONS_REDIS_KEY, *tr_to_redis)
 
             for tr in transactions:
                 tr.status = TransactionStatus.INPROGRESS
@@ -53,7 +52,7 @@ def get_transactions_to_withdraw() -> None:
 @app.task
 def do_withdraw() -> None:
     r = get_redis()
-    tr_to_withdraw = r.lpop("transactions", 10)
+    tr_to_withdraw = r.lpop(TRANSACTIONS_REDIS_KEY, 10)
 
     if not tr_to_withdraw:
         logger.debug("Nothing to do!")
@@ -62,8 +61,6 @@ def do_withdraw() -> None:
     logger.debug(f"Start do_wthidraw with: {tr_to_withdraw=}")
 
     with WithdrawFlowManager(tr_to_withdraw):
-        if not tr_to_withdraw:
-            return
         to_iter = len(tr_to_withdraw)
         for _ in range(to_iter):
             pure_tr = tr_to_withdraw.pop()
@@ -87,9 +84,4 @@ def do_withdraw() -> None:
                     tr.save(update_fields=["status"])
 
                 logger.debug(f"Requesting 3rd party for : {pure_tr=}")
-                third_party_result = request_third_party_deposit()
-                if not third_party_result:
-                    logger.error(f"Requesting 3rd party fail for : {pure_tr=}")
-                    logger.debug(f"Rollback bc 3rd party fail for : {pure_tr=}")
-                    tr_to_withdraw.append(pure_tr)
-                    raise ThirdPartyError
+                handle_third_party(pure_tr)
