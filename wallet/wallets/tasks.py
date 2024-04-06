@@ -12,7 +12,7 @@ from wallets.constants import TRANSACTIONS_REDIS_KEY, TransactionStatus
 
 # better to use `import exceptions` if there is more than one thing to import
 from wallets.models.transactions import Transaction
-from wallets.utils import WithdrawFlowManager, get_redis, handle_third_party
+from wallets.utils import WithdrawHandler, get_redis, handle_third_party
 
 logger = get_task_logger(__name__)
 
@@ -35,6 +35,7 @@ def get_transactions_to_withdraw() -> None:
             tr_to_redis = []
             for tr in transactions.values("uuid", "amount"):
                 tr["uuid"] = str(tr["uuid"])
+                tr["amount"] = float(tr["amount"])
                 tr_to_redis.append(str(tr))
             r = get_redis()
 
@@ -60,10 +61,10 @@ def do_withdraw() -> None:
 
     logger.debug(f"Start do_wthidraw with: {tr_to_withdraw=}")
 
-    with WithdrawFlowManager(tr_to_withdraw):
-        to_iter = len(tr_to_withdraw)
-        for _ in range(to_iter):
-            pure_tr = tr_to_withdraw.pop()
+    to_iter = len(tr_to_withdraw)
+    for _ in range(to_iter):
+        pure_tr = tr_to_withdraw.pop()
+        with WithdrawHandler(pure_tr):
             tr = pure_tr.decode().replace("'", '"')
             tr = TransactionData.model_validate(json.loads(str(tr)))
             with transaction.atomic():
@@ -84,4 +85,4 @@ def do_withdraw() -> None:
                     tr.save(update_fields=["status"])
 
                 logger.debug(f"Requesting 3rd party for : {pure_tr=}")
-                handle_third_party(pure_tr)
+                handle_third_party()

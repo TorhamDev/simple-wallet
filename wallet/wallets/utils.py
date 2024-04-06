@@ -40,27 +40,18 @@ def lpush_to_redis(items: list) -> int:
     return result
 
 
-def handle_third_party(pure_tr) -> None:
-    try:
-        result = request_third_party_deposit()
+def handle_third_party() -> None:
+    result = request_third_party_deposit()
 
-        if not result:
-            # put it back for retry or mark transaction as fail based on business requirements
-            lpush_to_redis([pure_tr])
+    if not result:
+        raise ThirdPartyError
 
-    except ConnectionError:
-        lpush_to_redis([pure_tr])
-        # log into database
-        # log: 3rd party resut faild for TR_ID
-        # and based on business requirements we can update transactions too
-        ...
+    # some other things to do here...
 
 
-class WithdrawFlowManager:
-    tr_to_withdraw = []
-
-    def __init__(self, tr_to_withdraw: list) -> None:
-        self.tr_to_withdraw = tr_to_withdraw
+class WithdrawHandler:
+    def __init__(self, tr_in_progress) -> None:
+        self.tr_in_progress = tr_in_progress
 
     def __enter__(self):
         return self
@@ -70,8 +61,9 @@ class WithdrawFlowManager:
             logger.warning(
                 f"Restore again to redis bc of: {exc_type.__name__} - {str(exc_val)}"
             )
-            if self.tr_to_withdraw:
-                lpush_to_redis(self.tr_to_withdraw)
+            logger.warning(f"Restore {self.tr_in_progress}")
+            if self.tr_in_progress:
+                lpush_to_redis([self.tr_in_progress])
 
         if exc_type is json.decoder.JSONDecodeError:
             # do what you have to do about this error
@@ -96,6 +88,13 @@ class WithdrawFlowManager:
             logger.warning(
                 f"An RedisConnectionError error occurred: {exc_type.__name__} - {str(exc_val)}"
             )
+
+        elif exc_type is ConnectionError:
+            # do what you have to do about this error
+            logger.warning(
+                f"An ConnectionError error occurred: {exc_type.__name__} - {str(exc_val)}"
+            )
+
         elif exc_type is ThirdPartyError:
             # do what you have to do about this error
             logger.warning(
