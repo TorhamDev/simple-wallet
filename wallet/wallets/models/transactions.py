@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from wallets.constants import TRANSACTION_STATUS, TRANSACTION_STATUS_PENDING
+from wallets.constants import TransactionStatus
 from wallets.exceptions import DateIsNotInThefuture
 from wallets.models import BaseModel
 from wallets.models.wallets import Wallet
@@ -24,7 +24,7 @@ class Transaction(BaseModel):
     draw_time = models.DateTimeField()
     status = models.CharField(
         max_length=20,
-        choices=TRANSACTION_STATUS,
+        choices=TransactionStatus.choices,
         blank=True,
         null=True,
     )
@@ -43,7 +43,7 @@ class Transaction(BaseModel):
             wallet=wallet,
             amount=amount,
             draw_time=draw_time,
-            status=TRANSACTION_STATUS_PENDING,
+            status=TransactionStatus.PENDING,
         )
         transaction.save()
         return transaction
