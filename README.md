@@ -26,7 +26,7 @@ so we know there is no real answer to this problem, there is always something wr
 ### How To RUN?
 
 make sure you have `Redis`, `MySQL`, `Celery` and `Celery Beat` already installed and run
-thne update your own configs into `.env` file, you can find a sample in `.env.sample file`
+thne update your own configs into `.env` file, you can find a sample in `wallet/.env.sample` file
 then run commands below step by step
 
 ```bash
