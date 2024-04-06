@@ -1,11 +1,8 @@
-TRANSACTION_STATUS_PENDING = "pending"
-TRANSACTION_STATUS_SUCCESSFUL = "successful"
-TRANSACTION_STATUS_FAILED = "failed"
-TRANSACTION_STATUS_INPROGRESS = "inprogress"
+from django.db import models
 
-TRANSACTION_STATUS = [
-    (TRANSACTION_STATUS_PENDING, "Pending"),
-    (TRANSACTION_STATUS_SUCCESSFUL, "Successful"),
-    (TRANSACTION_STATUS_FAILED, "Failed"),
-    (TRANSACTION_STATUS_INPROGRESS, "inprogress"),
-]
+
+class TransactionStatus(models.TextChoices):
+    PENDING = "pending", "Pending"
+    SUCCESSFUL = "successful", "Successful"
+    FAILED = "failed", "Failed"
+    INPROGRESS = "inprogress", "Inprogress"
