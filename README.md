@@ -26,18 +26,21 @@ so we know there is no real answer to this problem, there is always something wr
 ### How To RUN?
 
 make sure you have `Redis`, `MySQL`, `Celery` and `Celery Beat` already installed and run
-thne update your own configs into `.env` file, you can find a sample in `wallet/.env.sample` file
+then update your own configs into `.env` file, you can find a sample in `wallet/.env.sample` file
 then run commands below step by step
 
 ```bash
 git clone https://github.com/TorhamDev/simple-wallet.git
 
-cd simple-wallet
+cd simple-wallet/wallet
 
 pip install -r requirements.txt
 
-python manager.py runserver
+python manage.py makemigrations && pyhthon manage.py migrate
+
+python manage.py runserver
 ```
+**You need run third party service too**
 
 ![image](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue)
 ![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white)
