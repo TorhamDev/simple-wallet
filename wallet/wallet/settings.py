@@ -10,16 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+from dotenv import load_dotenv
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+get_env = os.getenv
+
+load_dotenv(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-89ufi$15chz5o&js3*qv9#_=!q2*-iju27$(#me76)=67o&p5m"
+SECRET_KEY = get_env("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -77,11 +82,11 @@ WSGI_APPLICATION = "wallet.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "wallet",
-        "USER": "root",
-        "PASSWORD": "mysql",
-        "HOST": "127.0.0.1",
-        "PORT": "3307",
+        "NAME": get_env("DATABASE_NAME"),
+        "USER": get_env("DATABASE_USER"),
+        "PASSWORD": get_env("DATABASE_PASSWORD"),
+        "HOST": get_env("DATABASE_HOST"),
+        "PORT": get_env("DATABASE_PORT"),
         "ATOMIC_REQUESTS": True,
     }
 }
@@ -135,21 +140,21 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [],
 }
 
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_BROKER_URL = get_env("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = get_env("CELERY_RESULT_BACKEND")
 CELERY_ACCEPT_CONTENT = ["application/json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = get_env("CELERY_TASK_SERIALIZER")
+CELERY_RESULT_SERIALIZER = get_env("CELERY_RESULT_SERIALIZER")
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 
 
 CELERY_BEAT_SCHEDULE = {
     "get_transactions_to_withdraw": {
         "task": "wallets.tasks.get_transactions_to_withdraw",
-        "schedule": 30,
+        "schedule": int(get_env("GET_TRANSACTIONS_TASK_TIME", 30)),
     },
     "do_withdraw": {
         "task": "wallets.tasks.do_withdraw",
-        "schedule": 30,
+        "schedule": int(get_env("DO_DRAW_TASK_TIME", 30)),
     },
 }
