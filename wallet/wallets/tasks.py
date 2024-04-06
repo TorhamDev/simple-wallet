@@ -82,7 +82,7 @@ def do_withdraw() -> None:
                     )
                     if (tr.wallet.balance - tr.amount) < 0:
                         tr.status = TRANSACTION_STATUS_FAILED
-                        tr.save()
+                        tr.save(update_fields=["status"])
                         logger.debug(
                             f"withdraw fail bc of low balance for : {pure_tr=}"
                         )
@@ -90,7 +90,7 @@ def do_withdraw() -> None:
                         logger.debug(f"ourside withdraw successed for : {pure_tr=}")
                         tr.wallet.decrease_balance(tr.amount)
                         tr.status = TRANSACTION_STATUS_SUCCESSFUL
-                        tr.save()
+                        tr.save(update_fields=["status"])
 
                     logger.debug(f"Requesting 3rd party for : {pure_tr=}")
                     third_party_result = request_third_party_deposit()
