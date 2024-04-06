@@ -6,3 +6,6 @@ class TransactionStatus(models.TextChoices):
     SUCCESSFUL = "successful", "Successful"
     FAILED = "failed", "Failed"
     INPROGRESS = "inprogress", "Inprogress"
+
+
+TRANSACTIONS_REDIS_KEY = "transactions"
