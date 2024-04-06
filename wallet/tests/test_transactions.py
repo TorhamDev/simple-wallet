@@ -1,0 +1,16 @@
+from django.test import TestCase
+from rest_framework.test import APIClient
+
+client = APIClient()
+
+
+class WalletTest(TestCase):
+    def test_create_transactions_successful(self): ...
+
+    def test_create_transactions_negative_amount(self): ...
+
+    def test_create_transactions_low_wallet_balance(self): ...
+
+    def test_create_transactions_time_in_the_past(self): ...
+
+    # ...
